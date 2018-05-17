@@ -47,17 +47,6 @@ class Database
 		return mysqli_fetch_assoc($r);
 	}
 	
-	public function fetchAll($q)
-	{
-		$r = mysqli_query($this->connection, $q);
-		
-		$res = [];
-		
-		// ..
-		
-		return $res;
-	}
-	
 	public function exec($q)
 	{
 		return !!mysqli_query($this->connection, $q);

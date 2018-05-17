@@ -57,4 +57,9 @@ class Database
 		
 		return $res;
 	}
+	
+	public function exec($q)
+	{
+		return !!mysqli_query($this->connection, $q);
+	}
 }

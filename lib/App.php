@@ -3,6 +3,8 @@
 require_once BASE_DIR . 'lib/Config.php';
 require_once BASE_DIR . 'lib/Database.php';
 require_once BASE_DIR . 'lib/Request.php';
+require_once BASE_DIR . 'lib/Response.php';
+require_once BASE_DIR . 'model/UrlsTable.php';
 
 class App
 {
@@ -28,12 +30,11 @@ class App
 		}
 		else if ($this->isValidShortName(substr($uri, 1)))
 		{
-			echo 'short url';
+			$this->procShortUrl();
 		}
 		else
 		{
-			header('HTTP/1.1 404 Not Found');
-			@include BASE_DIR . 'www/404.html';
+			Response::error404();
 		}
 	}
 	
@@ -43,5 +44,27 @@ class App
 	private function isValidShortName($str)
 	{
 		return preg_match('/^[a-zA-Z0-9]+$/', $str);
+	}
+	
+	private function procShortUrl()
+	{
+		$request = Request::getInstance();
+		$short = substr($request->getURI(), 1);
+		
+		// Find short name in the table
+		$urlsTable = new UrlsTable();
+		$entry = $urlsTable->findUrl($short);
+		if (!$entry)
+		{
+			Response::error404();
+		}
+		
+		// Increment 'used' counter
+		$entry['used']++;
+		$urlsTable->updateEntry($entry);
+		
+		// Redirect
+		header('Location: ' . $entry['full_url']);
+		die();
 	}
 }

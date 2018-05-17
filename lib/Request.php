@@ -40,6 +40,17 @@ class Request
 		return $url . '/';
 	}
 	
+	/**
+	 * Get GET param
+	 */
+	public function getParam($name, $default = false)
+	{
+		return (isset($_GET[$name])) ? $_GET[$name] : $default;
+	}
+	
+	/**
+	 * Get POST param
+	 */
 	public function postParam($name, $default = false)
 	{
 		return (isset($_POST[$name])) ? $_POST[$name] : $default;

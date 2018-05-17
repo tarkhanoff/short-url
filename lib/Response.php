@@ -29,4 +29,11 @@ class Response
 		@require BASE_DIR . 'templates/layout.php';
 		die();
 	}
+	
+	static function json($data)
+	{
+		header('Content-type: application/json');
+		echo json_encode($data);
+		die();
+	}
 }

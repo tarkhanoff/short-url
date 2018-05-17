@@ -23,6 +23,11 @@ class App
 	{
 		$this->init();
 		
+		// Clean up the table, remove old entries
+		// Move to cron??
+		$urlsTable = new UrlsTable();
+		$urlsTable->cleanup();
+		
 		// Dispatch request
 		$request = Request::getInstance();
 		$uri = $request->getURI();

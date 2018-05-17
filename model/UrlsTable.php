@@ -21,6 +21,17 @@ class UrlsTable
 		return $db->fetch($q);
 	}
 	
+	/**
+	 * Removes old entries (more than 15 days old)
+	 */
+	public function cleanup()
+	{
+		$db = Database::getInstance();
+		
+		$q = 'DELETE FROM `urls` WHERE DATEDIFF(NOW(), `created_at`) >= 15';
+		return $db->exec($q);
+	}
+	
 	public function updateEntry($entry)
 	{
 		if (!is_array($entry) || !isset($entry['id']))

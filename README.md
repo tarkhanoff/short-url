@@ -14,3 +14,20 @@ Also you can choose desired short name, but it should be unique.
   + Enter your DB credentials
   + Choose verbosity level (0 - disable log; 2 - all messages)
 6. Set write permission on `log` folder for web-server user
+
+## API
+There is only one method implemented.
+
+### create
+
+Example: http://www.domain.com/api?method=create&url=...&short=...
+
+Just send GET request to the `/api` with following parameters:
+* method = create
+* url = \<your URL\>
+* short = \<short name\> (optional)
+
+The response will be in JSON format.
+* `result` - "error" or "ok"
+* `errors` - array of errors (if `result` == "error")
+* `url` - resulting URL (if `result` == "ok")

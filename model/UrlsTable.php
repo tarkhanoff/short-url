@@ -29,7 +29,6 @@ class UrlsTable
 		$db = Database::getInstance();
 		
 		$params = array();
-		
 		foreach ($this->fields as $field)
 		{
 			if (($field != 'id') && isset($entry[$field]))
@@ -39,6 +38,28 @@ class UrlsTable
 		}
 		
 		$q = 'UPDATE `' . $this->tableName . '` SET ' . implode(', ', $params) . ' WHERE `id` = ' . (int)$entry['id'];
+		return $db->exec($q);
+	}
+	
+	public function insertEntry($entry)
+	{
+		if (!is_array($entry))
+			return false;
+		
+		$db = Database::getInstance();
+		
+		$names = array();
+		$values = array();
+		foreach ($this->fields as $field)
+		{
+			if (($field != 'id') && isset($entry[$field]))
+			{
+				$names[] = '`' . $field . '`';
+				$values[] = '"' . $db->escapeString($entry[$field]) . '"';
+			}
+		}
+		
+		$q = 'INSERT INTO `' . $this->tableName . '` (' . implode(', ', $names) . ') VALUES (' . implode(', ', $values) . ')';
 		return $db->exec($q);
 	}
 }

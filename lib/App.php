@@ -26,7 +26,7 @@ class App
 		
 		if (($uri == '/') || ($uri == '/index.php'))
 		{
-			@require BASE_DIR . 'templates/layout.php';
+			$this->procMain();
 		}
 		else if ($this->isValidShortName(substr($uri, 1)))
 		{
@@ -66,5 +66,41 @@ class App
 		// Redirect
 		header('Location: ' . $entry['full_url']);
 		die();
+	}
+	
+	private function procMain()
+	{
+		$request = Request::getInstance();
+		if ($request->postParam('btnCreate') !== false)
+		{
+			$fullUrl = $request->postParam('inputURL');
+			$shortName = trim($request->postParam('inputShort', ''));
+			
+			// TODO: Generate new short name
+			if ($shortName == '')
+			{
+				$shortName = 'test' . date('YmdHis');
+			}
+			else
+			{
+				// TODO: Check uniqueness
+			}
+			
+			// TODO: URL validation
+			
+			// Insert entry to the table
+			$entry = array(
+				'short_name' => $shortName,
+				'full_url' => $fullUrl
+			);
+			
+			$urlsTable = new UrlsTable();
+			$urlsTable->insertEntry($entry);
+			
+			// Finally, show created URL
+			Response::renderTemplate('created', array('short_name' => $request->getAppURL() . $shortName));
+		}
+		
+		Response::renderTemplate('main');
 	}
 }

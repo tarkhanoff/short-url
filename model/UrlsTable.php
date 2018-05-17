@@ -5,12 +5,6 @@ class UrlsTable
 	protected $tableName = 'urls';
 	protected $fields = array('id', 'created_at', 'short_name', 'full_url', 'used');
 	
-	public function getAll()
-	{
-		// TODO: ...
-		die('aaa');
-	}
-	
 	public function findUrl($shortName)
 	{
 		$db = Database::getInstance();

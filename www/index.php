@@ -19,7 +19,7 @@ try
 	$db = Database::getInstance();
 	$db->connect($config->get('db.server'), $config->get('db.user'), $config->get('db.pass'), $config->get('db.name'));
 	
-	var_dump($db);
+	var_dump($_SERVER['REQUEST_URI']);
 }
 catch (Exception $ex)
 {

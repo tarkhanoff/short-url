@@ -4,10 +4,12 @@ class Logger
 {
 	private static $instance = null;
 	private $logPath;
+	protected $level;		// 0 - Disable log; 1 - Errors only; 2 - Errors & Warnings; 3 - All messages
 	
 	private function __construct()
 	{
 		$this->logPath = BASE_DIR . 'log/log.txt';
+		$this->level = 3;
 	}
 	
 	private function getInstance()
@@ -16,6 +18,12 @@ class Logger
 			self::$instance = new Logger();
 		
 		return self::$instance;
+	}
+
+	public static function setVerboseLevel($level)
+	{
+		$logger = self::getInstance();
+		$logger->level = (int)$level;
 	}
 	
 	private function writeToLog($msg)
@@ -30,25 +38,28 @@ class Logger
 	
 	public static function error($msg)
 	{
-		// TODO: Filter
-		
 		$logger = self::getInstance();
+		if ($logger->level <= 0)
+			return;
+		
 		$logger->writeToLog('ERROR: ' . $msg);
 	}
 	
 	public static function warn($msg)
 	{
-		// TODO: Filter
-		
 		$logger = self::getInstance();
+		if ($logger->level <= 1)
+			return;
+		
 		$logger->writeToLog('WARN: ' . $msg);
 	}
 	
 	public static function info($msg)
 	{
-		// TODO: Filter
-		
 		$logger = self::getInstance();
+		if ($logger->level <= 2)
+			return;
+		
 		$logger->writeToLog('INFO: ' . $msg);
 	}
 }

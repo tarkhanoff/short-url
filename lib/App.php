@@ -12,6 +12,8 @@ class App
 	private function init()
 	{
 		$config = Config::getInstance();
+		
+		Logger::setVerboseLevel($config->get('log.verbose_level'));
 	
 		$db = Database::getInstance();
 		$db->connect($config->get('db.server'), $config->get('db.user'), $config->get('db.pass'), $config->get('db.name'));

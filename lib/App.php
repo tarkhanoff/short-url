@@ -60,6 +60,27 @@ class App
 		return preg_match('/^[a-zA-Z0-9]+$/', $str);
 	}
 	
+	private function generateShortName()
+	{
+		$urlsTable = new UrlsTable();
+		$abc = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		$abcLen = strlen($abc);
+		
+		do
+		{
+			// Generate new random name
+			$name = "";
+			for ($i = 0; $i < 8; $i++)
+			{
+				$n = mt_rand(0, $abcLen - 1);
+				$name .= $abc[$n];
+			}
+		}
+		while ($urlsTable->findUrl($name));	// Check if already exists
+
+		return $name;
+	}
+	
 	private function procShortUrl()
 	{
 		$request = Request::getInstance();
@@ -78,10 +99,8 @@ class App
 		$urlsTable->updateEntry($entry);
 		
 		Logger::info('Redirecting: ' . $entry['full_url']);
-		
-		// Redirect
-		header('Location: ' . $entry['full_url']);
-		die();
+
+		Response::redirect($entry['full_url']);
 	}
 	
 	private function procMain()
@@ -101,10 +120,7 @@ class App
 			{
 				// Generate new short name, if necessary
 				if ($shortName == '')
-				{
-					// TODO: fix this!
-					$shortName = 'test' . date('YmdHis');
-				}
+					$shortName = $this->generateShortName();
 			
 				// Insert entry to the table
 				$entry = array(
@@ -179,7 +195,7 @@ class App
 				{
 					// Generate new short name, if necessary
 					if ($shortName == '')
-						$shortName = 'test' . date('YmdHis');
+						$shortName = $this->generateShortName();
 				
 					// Insert entry to the table
 					$urlsTable->insertEntry(array(

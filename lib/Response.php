@@ -36,4 +36,10 @@ class Response
 		echo json_encode($data);
 		die();
 	}
+	
+	static function redirect($url)
+	{
+		header('Location: ' . $url);
+		die();
+	}
 }

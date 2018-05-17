@@ -164,6 +164,10 @@ class App
 		// Check short name
 		if ($shortName != '')
 		{
+			// Check format
+			if (!$this->isValidShortName($shortName))
+				$errors[] = 'Invalid short name';
+			
 			// Check uniqueness
 			$urlsTable = new UrlsTable();
 			if ($urlsTable->findUrl($shortName))

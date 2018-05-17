@@ -4,9 +4,14 @@ define ('BASE_DIR', __DIR__ . '/../');
 
 require_once BASE_DIR . 'lib/Config.php';
 require_once BASE_DIR . 'lib/Database.php';
+require_once BASE_DIR . 'lib/Logger.php';
 
 try
 {
+	//Logger::error('Sample error text');
+	//Logger::warn('Sample warning text');
+	//Logger::info('Sample info text');
+	
 	//Config::load('debug.ini');
 
 	$config = Config::getInstance();
@@ -18,9 +23,7 @@ try
 }
 catch (Exception $ex)
 {
-	// TODO: log error
-	
 	echo 'Sorry, something goes wrong..<br>';
-	echo 'ERROR: ' . $ex->getMessage();
+	Logger::error('Exception: ' . $ex->getMessage());
 	die();
 }

@@ -14,3 +14,11 @@ body {
 .btn-primary {
 	margin-top: 15px;
 }
+
+.alert {
+	text-align: left;
+}
+
+.alert ul {
+	margin: 0px;
+}

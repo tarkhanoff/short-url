@@ -4,6 +4,7 @@ require_once BASE_DIR . 'lib/Config.php';
 require_once BASE_DIR . 'lib/Database.php';
 require_once BASE_DIR . 'lib/Request.php';
 require_once BASE_DIR . 'lib/Response.php';
+require_once BASE_DIR . 'lib/UrlValidator.php';
 require_once BASE_DIR . 'model/UrlsTable.php';
 
 class App
@@ -23,6 +24,8 @@ class App
 		// Dispatch request
 		$request = Request::getInstance();
 		$uri = $request->getURI();
+		
+		Logger::info('Request: ' . $uri);
 		
 		if (($uri == '/') || ($uri == '/index.php'))
 		{
@@ -63,6 +66,8 @@ class App
 		$entry['used']++;
 		$urlsTable->updateEntry($entry);
 		
+		Logger::info('Redirecting: ' . $entry['full_url']);
+		
 		// Redirect
 		header('Location: ' . $entry['full_url']);
 		die();
@@ -71,34 +76,67 @@ class App
 	private function procMain()
 	{
 		$request = Request::getInstance();
+		
+		// Check if form was submitted
 		if ($request->postParam('btnCreate') !== false)
 		{
-			$fullUrl = $request->postParam('inputURL');
+			// Get request params
+			$fullUrl = trim($request->postParam('inputURL'));
 			$shortName = trim($request->postParam('inputShort', ''));
 			
-			// TODO: Generate new short name
-			if ($shortName == '')
+			$errors = array();
+			
+			// URL validation
+			if (!UrlValidator::validate($fullUrl))
 			{
+				Logger::info('Invalid URL: ' . $fullUrl);
+				$errors[] = 'Invalid URL!';
+			}
+			
+			$urlsTable = new UrlsTable();
+			
+			// Check short name
+			// Should not generate new short name if URL is invalid
+			if (($shortName == '') && (count($errors) == 0))
+			{
+				// TODO: Generate new short name
 				$shortName = 'test' . date('YmdHis');
 			}
 			else
 			{
-				// TODO: Check uniqueness
+				// Check uniqueness
+				if ($urlsTable->findUrl($shortName))
+				{
+					Logger::info('Already exists: ' . $shortName);
+					$errors[] = 'Short name already exists!';
+				}
 			}
-			
-			// TODO: URL validation
-			
-			// Insert entry to the table
-			$entry = array(
-				'short_name' => $shortName,
-				'full_url' => $fullUrl
-			);
-			
-			$urlsTable = new UrlsTable();
-			$urlsTable->insertEntry($entry);
-			
-			// Finally, show created URL
-			Response::renderTemplate('created', array('short_name' => $request->getAppURL() . $shortName));
+
+			// Check for errors
+			if (count($errors) == 0)
+			{
+				// Insert entry to the table
+				$entry = array(
+					'short_name' => $shortName,
+					'full_url' => $fullUrl
+				);
+				
+				$urlsTable->insertEntry($entry);
+				
+				Logger::info('New short URL: ' . $entry['short_name'] . ' -> ' . $entry['full_url']);
+				
+				// Finally, show created URL
+				Response::renderTemplate('created', array('short_name' => $request->getAppURL() . $shortName));
+			}
+			else
+			{
+				// Display errors
+				Response::renderTemplate('main', array(
+					'short_name' => $shortName,
+					'full_url' => $fullUrl,
+					'errors' => $errors
+				));
+			}
 		}
 		
 		Response::renderTemplate('main');
